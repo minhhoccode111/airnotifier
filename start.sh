@@ -15,7 +15,13 @@ if [ ! -f "./logging.ini" ]; then
   cp logging.ini-sample logging.ini
 fi
 
-sed -i "s/mongouri = \"mongodb:\/\/localhost:27017\/\"/mongouri = \"mongodb:\/\/${MONGO_SERVER-localhost}:${MONGO_PORT-27017}\"/g" ./config.py
+MONGO_AUTH_PART=""
+if [ -n "$MONGO_USERNAME" ] && [ -n "$MONGO_PASSWORD" ]; then
+  MONGO_AUTH_PART="$(python -c "import urllib.parse; print(urllib.parse.quote_plus('$MONGO_USERNAME'))"):$(python -c "import urllib.parse; print(urllib.parse.quote_plus('$MONGO_PASSWORD'))")@"
+fi
+
+sed -i "s|mongouri = \"mongodb://localhost:27017/\"|mongouri = \"mongodb://${MONGO_AUTH_PART}${MONGO_SERVER-localhost}:${MONGO_PORT-27017}\"/g" ./config.py
+
 
 if [ ! -f "$LOGFILE" ]; then
   touch "$LOGFILE"
@@ -28,4 +34,4 @@ fi
 echo "Installing AirNotifier ..."
 pipenv run ./install.py
 echo "Starting AirNotifier ..."
-pipenv run ./app.py >> "$LOGFILE" 2>> "$LOGFILE_ERR"
+pipenv run python -m pdb -c continue ./app.py >> "$LOGFILE"
