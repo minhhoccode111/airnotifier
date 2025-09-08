@@ -28,7 +28,7 @@
 
 from constants import VERSION
 from hashlib import sha1
-from os import path
+from os import path, getenv
 from pymongo.errors import CollectionInvalid
 from tornado.options import define, options
 from util import *
@@ -41,7 +41,7 @@ EMAIL = "admin@airnotifier"
 DEFAULTPASSWORD = "admin"
 
 define("masterdb", default="airnotifier", help="MongoDB DB to store information")
-define("mongouri", default="mongodb://localhost:27017/", help="MongoDB host name")
+define("mongouri", default="mongodb://%s:%s/" % (getenv("MONGO_SERVER", "localhost"), getenv("MONGO_PORT", "27017")), help="MongoDB host name")
 EMAIL = "admin@airnotifier"
 DEFAULTPASSWORD = "admin"
 
