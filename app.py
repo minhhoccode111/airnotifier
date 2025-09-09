@@ -27,8 +27,6 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-
-
 from container import Container
 from dao import Dao
 from pushservices.bootstrap import init_messaging_agents
@@ -40,7 +38,6 @@ import logging.config
 import os
 import pymongo
 import sentry_sdk
-from urllib.parse import quote_plus
 
 
 define("appprefix", default="", help="DB name prefix")
@@ -52,9 +49,10 @@ define("https", default=False, help="Enable HTTPS")
 define("httpscertfile", default="", help="HTTPS cert file")
 define("httpskeyfile", default="", help="HTTPS key file")
 define("masterdb", default="airnotifier", help="MongoDB DB to store information")
-define("mongouri", default="mongodb://%s%s:%s/" % (("%s:%s@" % (quote_plus(os.getenv("MONGO_USERNAME", "")), quote_plus(os.getenv("MONGO_PASSWORD", "")))) if os.getenv("MONGO_USERNAME") else "", os.getenv("MONGO_SERVER", "localhost"), os.getenv("MONGO_PORT", "27017")), help="MongoDB host name")
+define("mongouri", default="mongodb://localhost:27017/", help="MongoDB host name")
 define(
-    "passwordsalt", default="d2o0n1g2s0h3e1n1g", help="Being used to make password hash")
+    "passwordsalt", default="d2o0n1g2s0h3e1n1g", help="Being used to make password hash"
+)
 define("pemdir", default="pemdir", help="Directory to store pems")
 define("port", default=8801, help="Application server listen port", type=int)
 define("sentrydsn", default="", help="sentry dsn")
@@ -77,18 +75,12 @@ if __name__ == "__main__":
     mongodb = None
     while not mongodb:
         try:
-            logging.info("Attempting to connect to MongoDB at: %s" % options.mongouri)
             mongodb = pymongo.MongoClient(options.mongouri)
-            logging.info("Successfully connected to MongoDB.")
-        except Exception as e:
-            logging.error("Failed to connect to MongoDB: %s" % e)
-            import time
-            time.sleep(5) # Wait before retrying
+        except:
+            logging.error("Cannot not connect to MongoDB")
 
     masterdb = mongodb[options.masterdb]
-    logging.info("Initializing messaging agents...")
     services = init_messaging_agents(masterdb)
-    logging.info("Messaging agents initialized.")
 
     SYSTEM_DATA = (
         ("mongodburi", options.mongouri, None),
@@ -99,6 +91,5 @@ if __name__ == "__main__":
     )
 
     container = Container(SYSTEM_DATA)
-    logging.info("Starting WebApplication...")
+
     WebApplication(container).main()
-    logging.info("WebApplication started successfully.")

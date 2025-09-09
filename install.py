@@ -35,14 +35,13 @@ from util import *
 import logging
 import pymongo
 import tornado.options
-from urllib.parse import quote_plus
 
 
 EMAIL = "admin@airnotifier"
 DEFAULTPASSWORD = "admin"
 
 define("masterdb", default="airnotifier", help="MongoDB DB to store information")
-define("mongouri", default="mongodb://%s%s:%s/" % (("%s:%s@" % (quote_plus(getenv("MONGO_USERNAME")), quote_plus(getenv("MONGO_PASSWORD")))) if getenv("MONGO_USERNAME") else "", getenv("MONGO_SERVER", "localhost"), getenv("MONGO_PORT", "27017")), help="MongoDB host name")
+define("mongouri", default="mongodb://%s:%s/" % (getenv("MONGO_SERVER", "localhost"), getenv("MONGO_PORT", "27017")), help="MongoDB host name")
 EMAIL = "admin@airnotifier"
 DEFAULTPASSWORD = "admin"
 

@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.6
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive TERM=linux
@@ -17,7 +17,7 @@ RUN mkdir -p /var/airnotifier/pemdir && \
 VOLUME ["/airnotifier", "/var/log/airnotifier", "/var/airnotifier/pemdir"]
 WORKDIR /airnotifier
 
-RUN pipenv --python /usr/local/bin/python3.9 install --deploy
+RUN pipenv install --deploy
 
 ADD start.sh /airnotifier
 RUN chmod a+x /airnotifier/start.sh
