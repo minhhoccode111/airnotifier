@@ -9,6 +9,8 @@ if [ ! -f "./config.py" ]; then
   cp config.py-sample config.py
 fi
 
+export MONGO_SERVER=mongodb
+
 sed -i 's/https = True/https = False/g' ./config.py
 
 if [ ! -f "./logging.ini" ]; then
@@ -28,4 +30,4 @@ fi
 echo "Installing AirNotifier ..."
 pipenv run ./install.py
 echo "Starting AirNotifier ..."
-pipenv run ./app.py >> "$LOGFILE" 2>> "$LOGFILE_ERR"
+pipenv run ./app.py >> "$LOGFILE" 2>> "$LOGFILE_ERR" || (cat "$LOGFILE_ERR" && exit 1)
